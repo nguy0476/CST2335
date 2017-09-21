@@ -3,4 +3,12 @@
     <string name="Hello_World">Hello World</string>
     <string name="button">Button</string>
 
+    <string name="login">login</string>
+    <string name="login_name">login name</string>
+    <string name="password">password</string>
+
+    <string name="Checkbox">Checkbox</string>
+    <string name="RadioButton">RadioButton</string>
+    <string name="Switch">What does this do?</string>
+
 </resources>
