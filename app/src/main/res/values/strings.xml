@@ -11,4 +11,5 @@
     <string name="RadioButton">RadioButton</string>
     <string name="Switch">What does this do?</string>
 
+    <onclick name="sendLoginMessage"/>
 </resources>
