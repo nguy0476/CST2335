@@ -8,67 +8,58 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
     private Button loginButton;
+    // Create SharedPreferences
+    private SharedPreferences pref;
+    // Create reference for view objects
+    EditText LoginText;
+    EditText PassText;
 
     protected static final String ACTIVITY_NAME = "LoginActivity";
     public static final String MY_PREF = "SharedPrefsFile";
 
-    EditText LoginText;
-    EditText PassText;
-
     public void showSavedPref(){
-
-        // Create SharedPreferences
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(MY_PREF, MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-
-        LoginText = findViewById(R.id.Email_Text);
-        PassText = findViewById(R.id.Password_Text);
-
-        // Set default text that appears every time the application loads
-        String defaultUsername = pref.getString("DefaultEmail", "email@domain.com");
-        String defaultPassword = pref.getString("DefaultPassword", "***");
-
-        LoginText.setText(defaultUsername);
-        PassText.setText(defaultPassword);
-
-        // Store the Data into Shared Preferences
-        editor.putString("key1", LoginText.getText().toString());
-        editor.putString("key2", PassText.getText().toString());
-
-        // Apply the changes
-        editor.apply();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Store reference to the button
+        // create the text fields
+        LoginText = findViewById(R.id.Email_Text);
+        PassText = findViewById(R.id.Password_Text);
         loginButton = findViewById(R.id.Button_Login);
+
+        // create the preference, giving it a name and setting the mode
+        pref = getSharedPreferences(MY_PREF, MODE_PRIVATE);
+
+        // Set the defaults for the login text and pass text
+        // if a value for the key is not present, return the 2nd parameter - null
+        LoginText.setText(pref.getString("DefaultEmail", "Please enter the email"));
+        //PassText.setText(pref.getString("DefaultPassword", ""));
 
         // Create button listener
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                SharedPreferences.Editor editor = pref.edit();
+                // Store the data using the put method
+                editor.putString("DefaultEmail", LoginText.getText().toString());
+                editor.putString("DefaultPassword", PassText.getText().toString());
+                //apply asynchronous changes on a separate thread
+                editor.apply();
                 // Create the intent and call the startActivity
                 // Intent(context, activity that should be started)
                 Intent intent = new Intent(LoginActivity.this, StartActivity.class);
                 startActivity(intent);
+
             }
         });
 
-        showSavedPref();
-
-    }
-
-    public void sendLoginMessage(View v){
-        Toast.makeText(LoginActivity.this, "Message", Toast.LENGTH_LONG).show();
     }
 
     @Override

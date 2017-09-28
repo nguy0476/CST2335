@@ -12,4 +12,8 @@
     <string name="RadioButton">bouton radio</string>
     <string name="Switch">Qu\'est-ce que cela fait?</string>
 
+    <string name="CB_dialog_message">Mettre fin à l\'activité?</string>
+    <string name="CB_dialog_title">Attention</string>
+    <string name="ok">D\'Accord</string>
+    <string name="cancel">Annuler</string>
 </resources>

@@ -1,11 +1,13 @@
 package com.example.jason.androidlabs;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import static android.util.Log.i;
 
@@ -35,10 +37,18 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
-    // checks if the parameter requestCode == 10
-    public void onActivityResult(int requestCode, int responseCode, Intent data){
-        if(requestCode==10){
+    // checks if request code == 10
+    // checks if resultcode == RESULT_OK
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode==10)
             Log.i(ACTIVITY_NAME, "Returned to StartActivity.onActivityResult");
+            // if result code matches the onchecked result code from the ListItemsActivity
+            // Get the message from extra data and output that message
+        if (resultCode == Activity.RESULT_OK){
+            String messagePassed = data.getStringExtra("ok_response");
+            Toast toast = Toast.makeText(this, messagePassed, Toast.LENGTH_LONG );
+            toast.show();
         }
     }
 

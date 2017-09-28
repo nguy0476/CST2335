@@ -11,4 +11,10 @@
     <string name="RadioButton">RadioButton</string>
     <string name="Switch">What does this do?</string>
 
+    <string name="saved_email">null</string>
+    <string name="saved_password">null</string>
+    <string name="CB_dialog_message">End the activity?</string>
+    <string name="CB_dialog_title">Warning</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>

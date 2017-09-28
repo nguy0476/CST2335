@@ -16,16 +16,18 @@
         />
 
     <CheckBox
+        android:id="@+id/finish_checkbox"
         android:hint="@string/Checkbox"
         android:layout_width="190dp"
         android:layout_column="1"
         android:layout_row="0" />
 
     <Switch
-        android:hint="@string/Switch"
+        android:id="@+id/on_off_switch"
         android:layout_width="190dp"
         android:layout_column="0"
-        android:layout_row="1" />
+        android:layout_row="1"
+        android:hint="@string/Switch" />
     />
 
     <ImageButton
