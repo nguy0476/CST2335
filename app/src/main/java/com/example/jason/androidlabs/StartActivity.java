@@ -14,6 +14,7 @@ import static android.util.Log.i;
 public class StartActivity extends AppCompatActivity {
 
     private Button helloButton;
+    private Button startChatButton;
 
     protected static final String ACTIVITY_NAME = "LoginActivity";
 
@@ -22,8 +23,8 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        // Create reference to button
-       helloButton = (Button) findViewById(R.id.hello_button);
+        helloButton = (Button) findViewById(R.id.hello_button);
+        startChatButton = (Button) findViewById(R.id.startChat_button);
 
         // Create button listener
         helloButton.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +34,15 @@ public class StartActivity extends AppCompatActivity {
                 Intent intent = new Intent(StartActivity.this, ListItemsActivity.class);
                 //startActivity(intent);
                 startActivityForResult(intent, 10);
+            }
+        });
+
+        // Create button listener for startChat button
+        startChatButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(StartActivity.this, ChatWindow.class);
+                Log.i(ACTIVITY_NAME, "User clicked Start Chat");
+                startActivity(intent);
             }
         });
     }

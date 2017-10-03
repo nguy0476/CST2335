@@ -17,4 +17,7 @@
     <string name="CB_dialog_title">Warning</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+
+    <string name="Start_Chat">Start Chat</string>
+    <string name="Send_button">Send</string>
 </resources>
