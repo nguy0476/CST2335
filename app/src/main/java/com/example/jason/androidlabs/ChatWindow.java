@@ -19,7 +19,7 @@ public class ChatWindow extends Activity {
     private EditText chatText;
     private Button sendBtn;
     private ListView chatList;
-    private ArrayList<String> chatMessages;
+    private ArrayList<String> chatMessages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,9 @@ public class ChatWindow extends Activity {
         // add on click listener for send button
         sendBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
-                //messageAdapter.notifyDataSetChanged();
-               chatText.setText("");
+                chatMessages.add(chatText.getText().toString());
+                messageAdapter.notifyDataSetChanged();
+                chatText.setText("");
             }
         });
     }
@@ -68,11 +69,11 @@ public class ChatWindow extends Activity {
             LayoutInflater inflater = ChatWindow.this.getLayoutInflater();
             View result = null;
 
-            if(position%2==0)
-                result = inflater.inflate(R.layout.chat_row_incoming, null);
-            else
+            if(position%2==0){
+                result = inflater.inflate(R.layout.chat_row_incoming, null);}
+            else {
                 result = inflater.inflate(R.layout.chat_row_outgoing, null);
-
+            }
             // set TextView message to be list.get(position)
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));
