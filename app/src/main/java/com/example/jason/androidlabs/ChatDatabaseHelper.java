@@ -16,7 +16,7 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
     // database name
     public static final String DATABASE_NAME = "Lab5.db";
     // database version
-    public static final int VERSION_NUM = 1;
+    public static final int VERSION_NUM = 3;
     // table name
     public static final String TABLE_NAME = "Table_Messages";
     // table columns
@@ -31,6 +31,7 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
             + KEY_MESSAGE + " TEXT"
             + ")";
 
+    // Constructor
     public ChatDatabaseHelper(Context ctx){
         super(ctx, DATABASE_NAME, null, VERSION_NUM);
     }
@@ -47,7 +48,7 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, " Upgrading database from version " + oldVersion
                 + " to " + newVersion +  " which will destroy all old data");
         // drop old table if it exists
-        db.execSQL("DROP TABLE IF EXISTS" + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         // create new table
         onCreate(db);
     }

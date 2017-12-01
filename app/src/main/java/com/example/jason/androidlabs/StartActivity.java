@@ -15,6 +15,7 @@ public class StartActivity extends AppCompatActivity {
 
     private Button helloButton;
     private Button startChatButton;
+    private Button forecastButton;
 
     protected static final String ACTIVITY_NAME = "LoginActivity";
 
@@ -25,6 +26,7 @@ public class StartActivity extends AppCompatActivity {
 
         helloButton = (Button) findViewById(R.id.hello_button);
         startChatButton = (Button) findViewById(R.id.startChat_button);
+        forecastButton = (Button) findViewById(R.id.weatherForecast_button);
 
         // Create button listener
         helloButton.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +44,15 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent intent = new Intent(StartActivity.this, ChatWindow.class);
                 Log.i(ACTIVITY_NAME, "User clicked Start Chat");
+                startActivity(intent);
+            }
+        });
+
+        // Create button listener for weatherForecast button
+        forecastButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(StartActivity.this, WeatherForecast.class);
+                Log.i(ACTIVITY_NAME, "User clicked Forecast button");
                 startActivity(intent);
             }
         });
