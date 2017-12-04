@@ -1,52 +1,46 @@
 package com.example.jason.androidlabs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WeatherForecast extends Activity {
 
-    private RelativeLayout rootLayout;
-
     private TextView currentText;
     private TextView minText;
     private TextView maxText;
-
-    public String current, minimum, maximum;
-
     private ImageView weatherImageView;
-    private Bitmap weatherPic;
     private ProgressBar progressBar;
 
+    // Log tag
+    private final static String LOGTAG = "WeatherForecast";
     // Weather URL
     private final static String URL =
             "http://api.openweathermap.org/data/2.5/weather?q=ottawa,ca&APPID=d99666875e0e51521f0040a3d97d0f6a&mode=xml&units=metric";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_forecast);
-
-        rootLayout = findViewById(R.id.rootLayout);
 
         progressBar = findViewById(R.id.progressBar);
         currentText = findViewById(R.id.current_text);
@@ -54,17 +48,14 @@ public class WeatherForecast extends Activity {
         maxText = findViewById(R.id.max_text);
         weatherImageView = findViewById(R.id.imageView_weather);
 
-        // set the progress bar visibility to visible
-        progressBar.setVisibility(View.VISIBLE);
-
         ForecastQuery fq = new ForecastQuery();
         fq.execute();
-
-
-
     }
 
     class ForecastQuery extends AsyncTask<String, Integer, String> {
+
+        private String current, minimum, maximum, iconName;
+        private Bitmap icon;
 
         @Override
         public String doInBackground(String...args){
@@ -76,17 +67,19 @@ public class WeatherForecast extends Activity {
                 conn.setConnectTimeout(15000 /* milliseconds */);
                 conn.setRequestMethod("GET");
                 conn.setDoInput(true);
-                // Starts the query
                 conn.connect();
+
+                // Get the InputStream
                 conn.getInputStream();
 
                 XmlPullParser parser = Xml.newPullParser();
                 parser.setInput(conn.getInputStream(), null);
 
+                // set the eventType to -1 to initiate the while loop
                 int eventType = -1;
 
                 while (eventType != XmlPullParser.END_DOCUMENT) {
-                    // Check if
+                    // Check if eventType is at the Start tag
                     if (eventType == XmlPullParser.START_TAG) {
                         // Assign the locationValue to the starting tag
                         String tempValues = parser.getName();
@@ -94,7 +87,7 @@ public class WeatherForecast extends Activity {
                         // if the name of the start tag is location, execute the code
                         if (tempValues.equals("temperature")) {
 
-                            // get the attributes within the location tag
+                            // get the attributes within the location tag: value, min, max
                             String value = parser.getAttributeValue(null, "value");
                             current = value;
                             publishProgress(25);
@@ -104,8 +97,36 @@ public class WeatherForecast extends Activity {
                             String max = parser.getAttributeValue(null, "max");
                             maximum = max;
                             publishProgress(75);
-                            Log.i("PullParser", "Fetched value, min and max");
+                            Log.i(LOGTAG, "Fetched value, min and max");
 
+                        }
+
+                        // if the name of the start tag is weather, execute the code
+                        if (parser.getName().equals("weather")) {
+                            // get the attributes within the weather tag: icon
+                            iconName = parser.getAttributeValue(null, "icon");
+                            String iconFile = iconName+".png";
+                            // if the file exists locally, retrieve the icon
+                            if (fileExistance(iconFile)) {
+                                FileInputStream inputStream = null;
+                                try {
+                                    inputStream = new FileInputStream(getBaseContext().getFileStreamPath(iconFile));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                icon = BitmapFactory.decodeStream(inputStream);
+                                Log.i(LOGTAG, "Image already exists");
+                            } else {
+                                URL iconUrl = new URL("http://openweathermap.org/img/w/" + iconName + ".png");
+                                icon = getImage(iconUrl);
+                                FileOutputStream outputStream = openFileOutput(iconName + ".png", Context.MODE_PRIVATE);
+                                icon.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
+                                outputStream.flush();
+                                outputStream.close();
+                                Log.i(LOGTAG, "Adding new image");
+                            }
+                            Log.i(LOGTAG, "file name="+iconFile);
+                            publishProgress(100);
                         }
                     }
                     // Check the next eventType to end the loop
@@ -121,96 +142,61 @@ public class WeatherForecast extends Activity {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... value) {
+            Log.i(LOGTAG, "In onProgressUpdate");
+            // set the progress bar visibility to visible
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(value[0]);
+        }
+
+        @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            currentText.setText(current);
-            minText.setText(minimum);
-            maxText.setText(maximum);
+            // set the degreeSymbol variable to the symbol
+            String degreeSymbol = Character.toString((char) 0x00B0);
+
+            // Set the textViews with parsed data
+            currentText.setText(current + degreeSymbol + "C");
+            minText.setText(minimum + degreeSymbol + "C");
+            maxText.setText(maximum + degreeSymbol + "C");
+            weatherImageView.setImageBitmap(icon);
+            progressBar.setVisibility(View.INVISIBLE);
         }
-    }
 
-    // Given a string representation of a URL, sets up a connection and gets
-    // an input stream.
-    public InputStream downloadUrl(String urlString) throws IOException {
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000 /* milliseconds */);
-        conn.setConnectTimeout(15000 /* milliseconds */);
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
-        // Starts the query
-        conn.connect();
-        return conn.getInputStream();
-    }
+    } // end of ForecastQuery Class
 
-    public void processURLData(InputStream inputStream) throws IOException, XmlPullParserException {
-
-        XmlPullParser parser = Xml.newPullParser();
-        parser.setInput(inputStream, null);
-
-        int eventType = -1;
-
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            // Check if
-            if (eventType == XmlPullParser.START_TAG) {
-                // Assign the locationValue to the starting tag
-                String tempValues = parser.getName();
-
-                // if the name of the start tag is location, execute the code
-                if (tempValues.equals("temperature")) {
-
-                    // get the attributes within the location tag
-                    String value = parser.getAttributeValue(null, "value");
-
-                    String min = parser.getAttributeValue(null, "min");
-                    String max = parser.getAttributeValue(null, "max");
-
-                    // print the values
-                   // printValues(value, min, max);
-                    currentText.setText(value);
-                    minText.setText(min);
-                    maxText.setText(max);
-
-                }
+    // returns Bitmap that is either downloaded or taken locally
+    protected static Bitmap getImage(URL url) {
+        Log.i(LOGTAG, "In getImage");
+        HttpURLConnection iconConn = null;
+        try {
+            iconConn = (HttpURLConnection) url.openConnection();
+            iconConn.connect();
+            int response = iconConn.getResponseCode();
+            // if response code is 200, execute the code
+            if (response == 200) {
+                return BitmapFactory.decodeStream(iconConn.getInputStream());
+            } else {
+                return null;
             }
-            // Check the next eventType to end the loop
-            eventType = parser.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (iconConn != null) {
+                iconConn.disconnect();
+            }
         }
     }
 
-    private void printValues(String value, String min, String max) {
-        // create nested linear layout
-        LinearLayout DataRows = new LinearLayout(this);
-        // Set the parameters of the three TextViews being created dynamically
-        // Set the width to 0 dp, set the height to wrap content
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // since the width is set to 0, we can specify weight instead
-        params.weight = 1;
-
-        DataRows.setOrientation(LinearLayout.HORIZONTAL);
-
-        // Create local TextView Variables to be generated
-        TextView cityColumn = new TextView(this);
-        TextView tempColumn = new TextView(this);
-        TextView weatherColumn = new TextView(this);
-
-        // apply the parameters set earlier to each TextView
-        cityColumn.setLayoutParams(params);
-        tempColumn.setLayoutParams(params);
-        weatherColumn.setLayoutParams(params);
-
-        // Set the TextViews with method parameters
-        cityColumn.setText(value);
-        tempColumn.setText(min);
-        weatherColumn.setText(max);
-
-        // Add the TextViews to the Created DataRow Layout
-        DataRows.addView(cityColumn);
-        DataRows.addView(tempColumn);
-        DataRows.addView(weatherColumn);
-
-        // Add the DataRow Layout to the main layout
-        rootLayout.addView(DataRows);
+    // Check if file exists and returns a boolean
+    public boolean fileExistance(String fileName) {
+        Log.i(LOGTAG, "In fileExistance");
+        Log.i(LOGTAG, getBaseContext().getFileStreamPath(fileName).toString());
+        File file = getBaseContext().getFileStreamPath(fileName);
+        return file.exists();
     }
+
+
+
 }
