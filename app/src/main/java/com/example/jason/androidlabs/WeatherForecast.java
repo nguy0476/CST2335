@@ -156,9 +156,9 @@ public class WeatherForecast extends Activity {
             String degreeSymbol = Character.toString((char) 0x00B0);
 
             // Set the textViews with parsed data
-            currentText.setText(current + degreeSymbol + "C");
-            minText.setText(minimum + degreeSymbol + "C");
-            maxText.setText(maximum + degreeSymbol + "C");
+            currentText.setText("Current:\t\t" + current + degreeSymbol + "C");
+            minText.setText("Minimum:\t\t\t" + minimum + degreeSymbol + "C");
+            maxText.setText("Maximum:\t\t\t" + maximum + degreeSymbol + "C");
             weatherImageView.setImageBitmap(icon);
             progressBar.setVisibility(View.INVISIBLE);
         }
