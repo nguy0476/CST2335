@@ -73,6 +73,8 @@ public class WeatherForecast extends Activity {
                 conn.getInputStream();
 
                 XmlPullParser parser = Xml.newPullParser();
+
+                // get the InputStream and and place it in the XmlPullParser Object
                 parser.setInput(conn.getInputStream(), null);
 
                 // set the eventType to -1 to initiate the while loop
