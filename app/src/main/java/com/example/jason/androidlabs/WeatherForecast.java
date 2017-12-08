@@ -198,7 +198,4 @@ public class WeatherForecast extends Activity {
         File file = getBaseContext().getFileStreamPath(fileName);
         return file.exists();
     }
-
-
-
 }
